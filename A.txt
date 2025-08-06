@@ -1,0 +1,66 @@
+當然可以！這裡是一個簡單的 Python 指令碼範例，可每天自動發送電子郵件報告。它會使用 Gmail 的 SMTP 伺服器，你也可以改為其他提供者。這裡是整個流程的逐步教學：
+
+步驟 1：準備需求
+安裝所需模組
+打開終端機或命令提示字元，執行以下指令來安裝 smtplib 和 email 模組（不需要額外安裝，它們是 Python 內建模組）：
+
+bash
+複製
+編輯
+pip install schedule
+步驟 2：撰寫 Python 指令碼
+以下是一個發送簡單每日報告的指令碼範例：
+
+python
+複製
+編輯
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import schedule
+import time
+
+# 設定你的 email 資訊
+EMAIL_ADDRESS = "your_email@gmail.com"
+EMAIL_PASSWORD = "your_app_password"  # 建議使用 Gmail App 密碼
+TO_EMAIL = "recipient_email@example.com"
+
+def send_daily_email():
+    subject = "每日報告"
+    body = "這是今天的自動化電子郵件報告內容。"
+
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL_ADDRESS
+    msg["To"] = TO_EMAIL
+    msg["Subject"] = subject
+
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+            server.send_message(msg)
+        print("郵件已成功發送")
+    except Exception as e:
+        print(f"郵件發送失敗：{e}")
+
+# 每天早上 8 點執行
+schedule.every().day.at("08:00").do(send_daily_email)
+
+print("開始每日郵件排程...")
+while True:
+    schedule.run_pending()
+    time.sleep(60)
+步驟 3：設定 Gmail App 密碼
+若你使用 Gmail：
+
+開啟兩步驟驗證：https://myaccount.google.com/security
+
+設定應用程式密碼
+
+選擇「郵件」與「Windows 電腦」或其他裝置名稱
+
+產生的 16 碼密碼填入 EMAIL_PASSWORD
+
+步驟 4：持續執行指令碼
+你可以將指令碼保持執行中，或設定為開機自動執行（例如加到排程任務或 crontab）。
